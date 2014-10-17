@@ -32,6 +32,7 @@ module.exports = function(grunt) {
 				dest: 'theme/inc/global.min.js'
 			}
 		},
+		//svg
 		svgmin: {
 			options: {
 				plugins: [
