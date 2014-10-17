@@ -106,6 +106,6 @@ module.exports = function(grunt) {
 	grunt.registerTask('css', ['sass', 'autoprefixer']);
 	grunt.registerTask('js', ['concat', 'uglify']);
 	grunt.registerTask('svg', ['svgmin', 'svgstore']);
-	grunt.registerTask('default', ['build', 'watch']);
 	grunt.registerTask('build', ['css', 'js', 'svg']);
+	grunt.registerTask('default', ['build', 'watch']);
 };
