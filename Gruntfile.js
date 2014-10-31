@@ -22,7 +22,7 @@ module.exports = function(grunt) {
 		//js
 		concat: {
 			files: {
-				src: ['js/jquery.min.js', 'js/*.js', 'js/scripts.js'],
+				src: ['js/*.js', 'js/scripts.js'],
 				dest: 'theme/inc/global.js',
 			}
 		},

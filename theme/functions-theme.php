@@ -1,8 +1,10 @@
 <?php
 
 function theme_scripts_and_styles() {
+	wp_deregister_script('jquery');
 	wp_enqueue_style( 'global-css', get_template_directory_uri() . '/inc/global.css' );
-	wp_enqueue_script( 'global-js', get_template_directory_uri() . '/inc/global.min.js' );
+	wp_enqueue_script( 'jquery', '/wp-includes/js/jquery/jquery.js', array(), false, true );
+	wp_enqueue_script( 'global-js', get_template_directory_uri() . '/inc/global.min.js', array('jquery'), false, true );
 }
 
 function theme_menus() {
