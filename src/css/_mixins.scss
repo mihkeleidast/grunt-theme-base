@@ -1,0 +1,86 @@
+@mixin bp($point) {
+	@if $point == max-md {
+		@media only screen and (max-width: 1169px) { @content; }
+	}
+	@elseif $point == max-sm {
+		@media only screen and (max-width: 1023px){ @content; }
+	}
+	@elseif $point == max-xs {
+		@media only screen and (max-width: 767px) { @content; }
+	}
+	@elseif $point == max-xxs {
+		@media only screen and (max-width: 479px) { @content; }
+	}
+	@elseif $point == min-lg {
+		@media only screen and (min-width: 1170px){ @content; }
+	}
+	@elseif $point == min-md {
+		@media only screen and (min-width: 1024px){ @content; }
+	}
+	@elseif $point == min-sm {
+		@media only screen and (min-width: 768px){ @content; }
+	}
+	@elseif $point == min-xs {
+		@media only screen and (min-width: 480px){ @content; }
+	}
+}
+
+@mixin clearfix {
+	&:after {
+		content: "";
+		display: table;
+		clear: both;
+	}
+}
+
+@mixin make-row($gutter: $grid-gutter-width) {
+	margin-left:  ($gutter / -2);
+	margin-right: ($gutter / -2);
+	@include clearfix;
+}
+
+@mixin calc-grid-column($index, $class, $type) {
+	@if ($type == width) and ($index > 0) {
+		.col-#{$class}-#{$index} {
+			width: percentage(($index / $grid-columns));
+		}
+	}
+	@if ($type == push) and ($index > 0) {
+		.col-#{$class}-push-#{$index} {
+			left: percentage(($index / $grid-columns));
+		}
+	}
+	@if ($type == push) and ($index == 0) {
+		.col-#{$class}-push-0 {
+			left: auto;
+		}
+	}
+	@if ($type == pull) and ($index > 0) {
+		.col-#{$class}-pull-#{$index} {
+			right: percentage(($index / $grid-columns));
+		}
+	}
+	@if ($type == pull) and ($index == 0) {
+		.col-#{$class}-pull-0 {
+			right: auto;
+		}
+	}
+	@if ($type == offset) {
+		.col-#{$class}-offset-#{$index} {
+			margin-left: percentage(($index / $grid-columns));
+		}
+	}
+}
+
+@mixin loop-grid-columns($columns, $class, $type) {
+	@for $i from 0 through $columns {
+		@include calc-grid-column($i, $class, $type);
+	}
+}
+
+@mixin make-grid($class) {
+	@include loop-grid-columns($grid-columns, $class, width);
+	@include loop-grid-columns($grid-columns, $class, pull);
+	@include loop-grid-columns($grid-columns, $class, push);
+	@include loop-grid-columns($grid-columns, $class, offset);
+}

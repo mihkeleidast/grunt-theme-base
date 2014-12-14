@@ -1,0 +1,30 @@
+[class^="col-"], [class*=" col-"] {
+	float: left;
+	position: relative;
+	min-height: 1px;
+	padding-left: ($grid-gutter-width / 2);
+	padding-right: ($grid-gutter-width / 2);
+}
+
+.row {
+	@include make-row;
+}
+
+
+@include make-grid(lg);
+
+@include bp(max-md) {
+	@include make-grid(md);
+}
+
+@include bp(max-sm) {
+	@include make-grid(sm);
+}
+
+@include bp(max-xs) {
+	@include make-grid(xs);
+}
+
+@include bp(max-xxs) {
+	@include make-grid(xxs);
+}
