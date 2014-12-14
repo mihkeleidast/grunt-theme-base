@@ -15,41 +15,33 @@ module.exports = function(grunt) {
 		},
 		autoprefixer: {
 			static: {
-				files: {
-					src: 'src/css/global-unprefixed.css',
-					dest: 'app/static/inc/global.min.css'
-				}
+				src: 'src/css/global-unprefixed.css',
+				dest: 'app/static/inc/global.min.css'
 			},
 			theme: {
-				files: {
-					src: 'src/css/global-unprefixed.css',
-					dest: 'app/theme/inc/global.min.css'
-				}
+				src: 'src/css/global-unprefixed.css',
+				dest: 'app/theme/inc/global.min.css'
 			}
 		},
 		//js
 		import: {
 			static: {
 				src: 'src/js/global.js',
-				dest: 'app/static/js/global.js',
+				dest: 'app/static/inc/js/global.js',
 			},
 			theme: {
 				src: 'src/js/global.js',
-				dest: 'app/theme/js/global.js',
+				dest: 'app/theme/inc/js/global.js',
 			}
 		},
 		uglify: {
 			static: {
-				files: {
-					src: 'static/inc/js/global.js',
-					dest: 'static/inc/js/global.min.js'
-				}
+				src: 'app/static/inc/js/global.js',
+				dest: 'app/static/inc/js/global.min.js'
 			},
 			theme: {
-				files: {
-					src: 'theme/inc/js/global.js',
-					dest: 'theme/inc/js/global.min.js'
-				}
+				src: 'app/theme/inc/js/global.js',
+				dest: 'app/theme/inc/js/global.min.js'
 			}
 		},
 		//svg
@@ -98,49 +90,86 @@ module.exports = function(grunt) {
 			options: {
 				livereload: true,
 			},
+			css_static: {
+				files: 'src/css/*.scss',
+				tasks: ['css-static'],
+			},
+			js_static: {
+				files: 'src/js/*.js',
+				tasks: ['js-static'],
+				options: {
+					livereload: true,
+				},
+			},
+			svg_static: {
+				files: 'src/svg/*.svg',
+				tasks: ['svg-static'],
+				options: {
+					livereload: true,
+				},
+			},
+			fonts_static: {
+				files: 'src/fonts/*',
+				tasks: ['copy:static'],
+				options: {
+					livereload: true,
+				},
+			},
+			img_static: {
+				files: 'src/img/*.{png,jpg,svg}',
+				tasks: ['newer:imagemin:static'],
+				options: {
+					livereload: true,
+				},
+			},
+			html_static: {
+				files: 'app/static/*.html',
+				options: {
+					livereload: true,
+				},
+			},
+			css_theme: {
+				files: 'src/css/*.scss',
+				tasks: ['css-theme'],
+				options: {
+					livereload: true,
+				},
+			},
+			js_theme: {
+				files: 'src/js/*.js',
+				tasks: ['js-theme'],
+				options: {
+					livereload: true,
+				},
+			},
+			svg_theme: {
+				files: 'src/svg/*.svg',
+				tasks: ['svg-theme'],
+				options: {
+					livereload: true,
+				},
+			},
+			fonts_theme: {
+				files: 'src/fonts/*',
+				tasks: ['copy:theme'],
+				options: {
+					livereload: true,
+				},
+			},
+			img_theme: {
+				files: 'src/img/*.{png,jpg,svg}',
+				tasks: ['newer:imagemin:static'],
+				options: {
+					livereload: true,
+				},
+			}
+		},
+		focus: {
 			static: {
-				css: {
-					files: 'src/css/*.scss',
-					tasks: ['css-static'],
-				},
-				js: {
-					files: 'src/js/*.js',
-					tasks: ['js-static'],
-				},
-				svg: {
-					files: 'src/svg/*.svg',
-					tasks: ['svg-static'],
-				},
-				fonts: {
-					files: 'src/fonts/*',
-					tasks: ['copy:static'],
-				},
-				img: {
-					files: 'src/img/*.{png,jpg,svg}',
-					tasks: ['newer:imagemin:static'],
-				}
+				include: ['css_static', 'js_static', 'svg_static', 'fonts_static', 'img_static', 'html_static'],
 			},
 			theme: {
-				css: {
-					files: 'src/css/*.scss',
-					tasks: ['css-theme'],
-				},
-				js: {
-					files: 'src/js/*.js',
-					tasks: ['js-theme'],
-				},
-				svg: {
-					files: 'src/svg/*.svg',
-					tasks: ['svg-theme'],
-				},
-				fonts: {
-					files: 'src/fonts/*',
-					tasks: ['copy:theme'],
-				},
-				img: {
-					files: 'src/img/*.{png,jpg,svg}',
-					tasks: ['newer:imagemin:static'],
-				}
+				include: ['css_theme', 'js_theme', 'svg_theme', 'fonts_theme', 'img_theme'],
 			}
 		},
 		connect: {
@@ -203,6 +232,8 @@ module.exports = function(grunt) {
 	//images
 	grunt.loadNpmTasks('grunt-contrib-imagemin');
 	grunt.loadNpmTasks('grunt-newer');
+	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-focus');
 
 	//serve
 	grunt.loadNpmTasks('grunt-contrib-watch');
@@ -212,13 +243,13 @@ module.exports = function(grunt) {
 	grunt.registerTask('js-theme', ['import:theme', 'uglify:theme']);
 	grunt.registerTask('svg-theme', ['svgmin', 'svgstore:theme']);
 	grunt.registerTask('build-theme', ['css-theme', 'js-theme', 'svg-theme', 'copy:theme', 'newer:imagemin:static']);
-	grunt.registerTask('theme', ['build-theme', 'watch:theme']);
+	grunt.registerTask('theme', ['build-theme', 'focus:theme']);
 
 	grunt.registerTask('css-static', ['sass', 'autoprefixer:static']);
 	grunt.registerTask('js-static', ['import:static', 'uglify:static']);
 	grunt.registerTask('svg-static', ['svgmin', 'svgstore:static']);
 	grunt.registerTask('build-static', ['css-static', 'js-static', 'svg-static', 'copy:static', 'newer:imagemin:theme']);
-	grunt.registerTask('static', ['build-static', 'connect', 'watch:static']);
+	grunt.registerTask('static', ['build-static', 'connect', 'focus:static']);
 
 	grunt.registerTask('default', ['static']);
 };

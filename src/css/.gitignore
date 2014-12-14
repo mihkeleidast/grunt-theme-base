@@ -1,4 +1,3 @@
 # Ignore everything in this directory
-*
+global-unprefixed.css
 # Except this file
-!.gitignore
