@@ -1,2 +1,2 @@
-# Ignore everything in this directory
+# Ignore node_modules in this directory
 node_modules/
