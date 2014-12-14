@@ -4,32 +4,52 @@ module.exports = function(grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 		//css
 		sass: {
-			dist: {
+			all: {
 				options: {
 					style: 'compressed'
 				},
 				files: {
-					'css/global-unprefixed.css': 'css/global.scss'
+					'src/css/global-unprefixed.css': 'src/css/global.scss'
 				}
 			}
 		},
 		autoprefixer: {
-			files: {
-				src: 'css/global-unprefixed.css',
-				dest: 'theme/inc/global.css'
+			static: {
+				files: {
+					src: 'src/css/global-unprefixed.css',
+					dest: 'app/static/inc/global.min.css'
+				}
+			},
+			theme: {
+				files: {
+					src: 'src/css/global-unprefixed.css',
+					dest: 'app/theme/inc/global.min.css'
+				}
 			}
 		},
 		//js
-		concat: {
-			files: {
-				src: ['js/*.js', 'js/scripts.js'],
-				dest: 'theme/inc/global.js',
+		import: {
+			static: {
+				src: 'src/js/global.js',
+				dest: 'app/static/js/global.js',
+			},
+			theme: {
+				src: 'src/js/global.js',
+				dest: 'app/theme/js/global.js',
 			}
 		},
 		uglify: {
-			files: {
-				src: 'theme/inc/global.js',
-				dest: 'theme/inc/global.min.js'
+			static: {
+				files: {
+					src: 'static/inc/js/global.js',
+					dest: 'static/inc/js/global.min.js'
+				}
+			},
+			theme: {
+				files: {
+					src: 'theme/inc/js/global.js',
+					dest: 'theme/inc/js/global.min.js'
+				}
 			}
 		},
 		//svg
@@ -41,12 +61,12 @@ module.exports = function(grunt) {
 				{ removeXMLProcInst:false }
 				]
 			},
-			dist: {
+			all: {
 				files: [{
 					expand: true,
-					cwd: 'svg/',
+					cwd: 'src/svg/',
 					src: ['*.svg'],
-					dest: 'svg/min/',
+					dest: 'src/svg/min/',
 				}]
 			}
 		},
@@ -62,9 +82,14 @@ module.exports = function(grunt) {
 				},
 				cleanup: true
 			},
-			default: {
+			static: {
 				files: {
-					'theme/inc/global.svg': ['svg/min/*.svg'],
+					'app/static/inc/global.svg': ['src/svg/min/*.svg'],
+				}
+			},
+			theme: {
+				files: {
+					'app/theme/inc/global.svg': ['src/svg/min/*.svg'],
 				}
 			}
 		},
@@ -73,17 +98,92 @@ module.exports = function(grunt) {
 			options: {
 				livereload: true,
 			},
-			css: {
-				files: 'css/*.scss',
-				tasks: ['css'],
+			static: {
+				css: {
+					files: 'src/css/*.scss',
+					tasks: ['css-static'],
+				},
+				js: {
+					files: 'src/js/*.js',
+					tasks: ['js-static'],
+				},
+				svg: {
+					files: 'src/svg/*.svg',
+					tasks: ['svg-static'],
+				},
+				fonts: {
+					files: 'src/fonts/*',
+					tasks: ['copy:static'],
+				},
+				img: {
+					files: 'src/img/*.{png,jpg,svg}',
+					tasks: ['newer:imagemin:static'],
+				}
 			},
-			js: {
-				files: 'js/*.js',
-				tasks: ['js'],
+			theme: {
+				css: {
+					files: 'src/css/*.scss',
+					tasks: ['css-theme'],
+				},
+				js: {
+					files: 'src/js/*.js',
+					tasks: ['js-theme'],
+				},
+				svg: {
+					files: 'src/svg/*.svg',
+					tasks: ['svg-theme'],
+				},
+				fonts: {
+					files: 'src/fonts/*',
+					tasks: ['copy:theme'],
+				},
+				img: {
+					files: 'src/img/*.{png,jpg,svg}',
+					tasks: ['newer:imagemin:static'],
+				}
+			}
+		},
+		connect: {
+			options: {
+				port: 1337,
+				hostname: 'localhost',
+				base: 'app/static'
 			},
-			svg: {
-				files: 'svg/*.svg',
-				tasks: ['svg'],
+			server: {
+				options: {
+					livereload: true,
+					open: true,
+				}
+			}
+		},
+		//fonts
+		copy: {
+			static: {
+				src: 'src/fonts/*',
+				dest: 'app/static/inc/fonts/',
+			},
+			theme: {
+				src: 'src/fonts/*',
+				dest: 'app/theme/inc/fonts/',
+			},
+		},
+		//images
+		imagemin: {
+			static: {
+				files: [{
+					expand: true,
+					cwd: 'src/img',
+					src: ['**/*.{png,jpg,svg}'],
+					dest: 'app/static/inc/img/'
+				}]
+			},
+			theme: {
+				files: [{
+					expand: true,
+					cwd: 'src/img',
+					src: ['**/*.{png,jpg,svg}'],
+					dest: 'app/theme/inc/img/'
+				}]
 			}
 		}
 	});
@@ -93,19 +193,32 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-autoprefixer');
 
 	//js
-	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-import');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 
 	//svg
 	grunt.loadNpmTasks('grunt-svgmin');
 	grunt.loadNpmTasks('grunt-svgstore');
 
+	//images
+	grunt.loadNpmTasks('grunt-contrib-imagemin');
+	grunt.loadNpmTasks('grunt-newer');
+
 	//serve
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-connect');
 
-	grunt.registerTask('css', ['sass', 'autoprefixer']);
-	grunt.registerTask('js', ['concat', 'uglify']);
-	grunt.registerTask('svg', ['svgmin', 'svgstore']);
-	grunt.registerTask('build', ['css', 'js', 'svg']);
-	grunt.registerTask('default', ['build', 'watch']);
+	grunt.registerTask('css-theme', ['sass', 'autoprefixer:theme']);
+	grunt.registerTask('js-theme', ['import:theme', 'uglify:theme']);
+	grunt.registerTask('svg-theme', ['svgmin', 'svgstore:theme']);
+	grunt.registerTask('build-theme', ['css-theme', 'js-theme', 'svg-theme', 'copy:theme', 'newer:imagemin:static']);
+	grunt.registerTask('theme', ['build-theme', 'watch:theme']);
+
+	grunt.registerTask('css-static', ['sass', 'autoprefixer:static']);
+	grunt.registerTask('js-static', ['import:static', 'uglify:static']);
+	grunt.registerTask('svg-static', ['svgmin', 'svgstore:static']);
+	grunt.registerTask('build-static', ['css-static', 'js-static', 'svg-static', 'copy:static', 'newer:imagemin:theme']);
+	grunt.registerTask('static', ['build-static', 'connect', 'watch:static']);
+
+	grunt.registerTask('default', ['static']);
 };
