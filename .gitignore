@@ -1,2 +1,4 @@
 # Ignore node_modules in this directory
 node_modules/
+app/theme/inc/
+app/static/inc/
